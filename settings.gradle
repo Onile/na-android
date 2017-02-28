@@ -1,1 +1,1 @@
-include ':app', ':NaAndroidLib'
+include ':app', ':NaAndroidLib', ':NaFace'

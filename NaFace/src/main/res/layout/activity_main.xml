@@ -10,4 +10,10 @@
 
     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:text="Hello World!" />
+    <Button
+        android:id="@+id/btStart"
+        android:layout_width="200dp"
+        android:layout_height="60dp"
+        android:layout_centerInParent="true"
+        android:text="@string/start"/>
 </RelativeLayout>

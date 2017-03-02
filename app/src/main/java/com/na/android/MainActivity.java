@@ -6,11 +6,12 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import com.douyaim.qsapp.api.HuluApi;
 import com.na.android.utils.NaPermissionUtils;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements NaPermissionUtils.NaPermissionCallbacks{
+public class MainActivity extends AppCompatActivity implements NaPermissionUtils.NaPermissionCallbacks {
 
     private static final String TAG = "MainActivity";
 
@@ -20,9 +21,11 @@ public class MainActivity extends AppCompatActivity implements NaPermissionUtils
         setContentView(R.layout.activity_main);
         boolean flag = NaPermissionUtils.hasPermissions(this, Manifest.permission.SEND_SMS, Manifest.permission.CAMERA);
         Log.e(TAG, "SEND_SMS flag=" + flag);
-        if (!flag){
+        if (!flag) {
             NaPermissionUtils.requestPermissions(this, "SEND_SMS", 100, Manifest.permission.SEND_SMS, Manifest.permission.CAMERA);
         }
+        String s = HuluApi.HTTP_RES_ERROR_NULL;
+//        GPUImageFilter
     }
 
     @Override
@@ -36,14 +39,14 @@ public class MainActivity extends AppCompatActivity implements NaPermissionUtils
     @Override
     public void onPermissionsGranted(int requestCode, List<String> perms) {
 
-        for(String perm:perms){
+        for (String perm : perms) {
             Log.e(TAG, "onPermissionsGranted perm=" + perm);
         }
     }
 
     @Override
     public void onPermissionsDenied(int requestCode, List<String> perms) {
-        for(String perm:perms){
+        for (String perm : perms) {
             Log.e(TAG, "onPermissionsGranted perm=" + perm);
         }
     }

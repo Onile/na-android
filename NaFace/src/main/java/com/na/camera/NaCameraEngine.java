@@ -35,7 +35,7 @@ public class NaCameraEngine implements INaCameraEngine,
     private NaCameraManager.CameraProxy mCamera;
     private boolean isFirstFrameReported = false;
     private int mCameraId;
-    private Camera.CameraInfo mCameraInfo;
+    private NaCameraInfo mCameraInfo;
     private INaSurfaceHelper mSurfaceHelper;
     // Remember the requested format in case we want to switch cameras.
     private int mWidth = DEFAULT_WIDTH;
@@ -88,9 +88,6 @@ public class NaCameraEngine implements INaCameraEngine,
         mCamera = NaCameraManager.instance().cameraOpen(id);
         mCameraId = id;
 
-        mCameraInfo = new Camera.CameraInfo();
-        Camera.getCameraInfo(mCameraId, mCameraInfo);
-
         if (mSurfaceHelper != null) {
             SurfaceTexture sf = mSurfaceHelper.getSurfaceTexture();
 
@@ -104,10 +101,6 @@ public class NaCameraEngine implements INaCameraEngine,
             if (holder != null) {
                 mCamera.setPreviewDisplay(holder);
             }
-
-            boolean isFace = (mCameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT);
-            int orientation = OrientationUtils.getFrameOrientation(isFace, mCameraInfo.orientation);
-            mSurfaceHelper.onRotation(orientation,isFace);
         }
 
         mCamera.setErrorCallback(this);
@@ -201,6 +194,7 @@ public class NaCameraEngine implements INaCameraEngine,
 
             mCamera.setParameters(parameters);
             mCamera.setDisplayOrientation(90);
+
             if (!isCapturingToTexture) {
                 mQueuedBuffers.clear();
                 final int frameSize = captureFormat.frameSize();
@@ -213,6 +207,17 @@ public class NaCameraEngine implements INaCameraEngine,
             }
 
             mCamera.startPreview();
+
+            mCameraInfo = new NaCameraInfo();
+            Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
+            Camera.getCameraInfo(mCameraId, cameraInfo);
+            boolean isFace = (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT);
+            int orientation = OrientationUtils.getFrameOrientation(isFace, cameraInfo.orientation);
+            mCameraInfo.isFront = isFace;
+            mCameraInfo.orientation = cameraInfo.orientation;
+            if (mSurfaceHelper != null) {
+                mSurfaceHelper.onRotation(orientation, isFace);
+            }
         }
     }
 
@@ -367,7 +372,7 @@ public class NaCameraEngine implements INaCameraEngine,
     @Override
     public boolean isFrontCamera() {
         if (mCameraInfo != null){
-          return mCameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT;
+          return mCameraInfo.isFront;
         }
         return false;
     }
@@ -421,7 +426,7 @@ public class NaCameraEngine implements INaCameraEngine,
         if (mSurfaceHelper != null) {
             int width = mCaptureFormat.width;
             int height = mCaptureFormat.height;
-            boolean isFace = (mCameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT);
+            boolean isFace = mCameraInfo.isFront;
             int orientation = OrientationUtils.getFrameOrientation(isFace, mCameraInfo.orientation);
             mSurfaceHelper.onPreviewFrame(data, width, height, orientation, captureTimeNs);
         }

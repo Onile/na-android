@@ -119,7 +119,7 @@ public class NaCameraEngineManager implements INaCameraEngine, INaCameraEvent{
     @Override
     public boolean isFrontCamera() {
         if(mCameraEngine != null){
-            mCameraEngine.isFrontCamera();
+            return mCameraEngine.isFrontCamera();
         }
         return false;
     }

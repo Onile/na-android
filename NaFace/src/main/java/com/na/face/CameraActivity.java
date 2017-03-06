@@ -1,12 +1,11 @@
 package com.na.face;
 
 import android.opengl.GLSurfaceView;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.na.camera.render.NaCamerRender;
 
-public class CameraActivity extends AppCompatActivity {
+public class CameraActivity extends NaBaseActivity {
 
     private GLSurfaceView mGLSurfaceView;
     private NaCamerRender naCamerRender;

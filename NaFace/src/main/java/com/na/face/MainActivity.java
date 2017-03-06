@@ -2,11 +2,10 @@ package com.na.face;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends NaBaseActivity implements View.OnClickListener {
 
     private Button mbtStart;
 

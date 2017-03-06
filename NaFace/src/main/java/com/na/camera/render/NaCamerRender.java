@@ -13,8 +13,12 @@ import com.na.camera.NaCameraEngineManager;
 import com.na.camera.filter.NaCameraFilter;
 import com.na.camera.filter.gpuimage.GPUImageFilter;
 import com.na.camera.glutils.OpenGLUtils;
+import com.na.camera.glutils.TextureRotationUtil;
+import com.na.uitls.NaLog;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -28,11 +32,22 @@ public class NaCamerRender implements Renderer, SurfaceHolder.Callback, INaSurfa
 
     public final static int CAMERA_BACK = 0;
     public final static int CAMERA_FRONT = 1;
+    private static final String TAG = "NaCamerRender";
 
     private GLSurfaceView mGLSurfaceView;
 
     private NaCameraFilter mCameraFilter;
     private GPUImageFilter mFilter;
+
+    /**
+     * 顶点坐标
+     */
+    protected FloatBuffer gLCubeBuffer;
+
+    /**
+     * 纹理坐标
+     */
+    protected FloatBuffer gLTextureBuffer;
 
     private int mImageWidth;
     private int mImageHeight;
@@ -44,7 +59,7 @@ public class NaCamerRender implements Renderer, SurfaceHolder.Callback, INaSurfa
 
     private int mCameraId = CAMERA_FRONT;
 
-    protected ScaleType mScaleType = ScaleType.CENTER_INSIDE;
+    protected ScaleType mScaleType = ScaleType.FIT_XY;
 
     private SurfaceTexture mSurfaceTexture;
     private int mTextureId = OpenGLUtils.NO_TEXTURE;
@@ -68,6 +83,8 @@ public class NaCamerRender implements Renderer, SurfaceHolder.Callback, INaSurfa
     private void initCameraFilter() {
         mCameraFilter = new NaCameraFilter();
         mCameraFilter.init();
+        mFilter = new GPUImageFilter();
+        mFilter.init();
     }
 
     private void initGLSurfaceView(){
@@ -75,14 +92,22 @@ public class NaCamerRender implements Renderer, SurfaceHolder.Callback, INaSurfa
         this.mGLSurfaceView.setRenderer(this);
         this.mGLSurfaceView.getHolder().addCallback(this);
         this.mGLSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+
+        gLCubeBuffer = ByteBuffer.allocateDirect(TextureRotationUtil.CUBE.length * 4)
+                .order(ByteOrder.nativeOrder())
+                .asFloatBuffer();
+        gLCubeBuffer.put(TextureRotationUtil.CUBE).position(0);
+
+        gLTextureBuffer = ByteBuffer.allocateDirect(TextureRotationUtil.TEXTURE_NO_ROTATION.length * 4)
+                .order(ByteOrder.nativeOrder())
+                .asFloatBuffer();
+        gLTextureBuffer.put(TextureRotationUtil.TEXTURE_NO_ROTATION).position(0);
     }
 
     private void openCamera() {
         NaCameraEngineManager.getInstance().setSurfaceHelper(this);
         NaCameraEngineManager.getInstance().setCameraEvent(this);
         NaCameraEngineManager.getInstance().openCamera(mCameraId);
-        mImageWidth = NaCameraEngineManager.getInstance().getPreviewWidth();
-        mImageHeight = NaCameraEngineManager.getInstance().getPreviewHeight();
     }
 
     private void closeCamera(){
@@ -114,13 +139,29 @@ public class NaCamerRender implements Renderer, SurfaceHolder.Callback, INaSurfa
         this.mSurfaceViewWidth = width;
         this.mSurfaceViewHeight = height;
         openCamera();
+
+        int iwidth = NaCameraEngineManager.getInstance().getPreviewWidth();
+        int iheight = NaCameraEngineManager.getInstance().getPreviewHeight();
+        int rotation = NaCameraEngineManager.getInstance().getOrientation();
+        if (rotation == 90 || rotation == 270){
+            mImageHeight = iwidth;
+            mImageWidth = iheight;
+        } else {
+            mImageWidth = iwidth;
+            mImageHeight = iheight;
+        }
         if (mCameraFilter != null){
-            int rotation = NaCameraEngineManager.getInstance().getOrientation();
-            boolean flibHorizontal = NaCameraEngineManager.getInstance().isFrontCamera();
             boolean flipVertical = true;
+            boolean flibHorizontal= NaCameraEngineManager.getInstance().isFrontCamera();
             mCameraFilter.onDisplaySizeChanged(width, height);
             mCameraFilter.onInputSizeChanged(mImageWidth, mImageHeight);
+            NaLog.e(TAG, "onSurfaceChanged IW=" + mImageWidth + ",ih=" + mImageHeight + ",flibh=" + flibHorizontal + ",rotation=" + rotation);
             mCameraFilter.adjustSize(rotation, flibHorizontal, flipVertical, mScaleType);
+        }
+
+        if (mFilter != null){
+            mFilter.onDisplaySizeChanged(width, height);
+            mFilter.onInputSizeChanged(mImageWidth, mImageHeight);
         }
     }
 
@@ -149,13 +190,15 @@ public class NaCamerRender implements Renderer, SurfaceHolder.Callback, INaSurfa
 
             int textureId = mTextureId;
             if (mCameraFilter != null){
+
                 mCameraFilter.setTextureTransformMatrix(mtx);
+                mCameraFilter.onDrawFrame(textureId, gLCubeBuffer, gLTextureBuffer);
                 textureId = mCameraFilter.onDrawBuffer(textureId, mRGBABuffer);
-                GLES20.glViewport(0, 0, mSurfaceViewWidth, mSurfaceViewHeight);
+//                GLES20.glViewport(0, 0, mSurfaceViewWidth, mSurfaceViewHeight);
                 if (mFilter != null){
                     mFilter.onDrawFrame(textureId);
                 } else {
-                    mCameraFilter.onDrawFrame1(textureId);
+                    mCameraFilter.onDrawFrame(textureId);
                 }
             }
         }

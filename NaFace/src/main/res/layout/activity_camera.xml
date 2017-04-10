@@ -12,4 +12,23 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <ImageView
+        android:id="@+id/ivSwitchCamera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:src="@drawable/selector_rewardcamera"/>
+
+    <ImageView
+        android:id="@+id/ivSavePicture"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/ivSwitchCamera"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:src="@mipmap/icon_camera"/>
+
 </RelativeLayout>

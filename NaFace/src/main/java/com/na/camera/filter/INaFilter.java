@@ -6,4 +6,6 @@ package com.na.camera.filter;
  */
 
 public interface INaFilter {
+//    void onInit();
+//    int onDrawFrame(final int textureId);
 }

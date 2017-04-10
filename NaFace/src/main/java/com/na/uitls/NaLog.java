@@ -59,60 +59,70 @@ public class NaLog {
 
     public static void e(String tag, String msg, Throwable e) {
         if (isDebug && mLogLevel <= ERROR) {
+            tag = "[NaLog]" + tag;
             Log.e(tag, msg, e);
         }
     }
 
     public static void e(String tag, String msg) {
         if (isDebug && mLogLevel <= ERROR) {
+            tag = "[NaLog]" + tag;
             Log.e(tag, msg);
         }
     }
 
     public static void w(String tag, String msg, Throwable e) {
         if (isDebug && mLogLevel <= WARN) {
+            tag = "[NaLog]" + tag;
             Log.w(tag, msg, e);
         }
     }
 
     public static void w(String tag, String msg) {
         if (isDebug && mLogLevel <= WARN) {
+            tag = "[NaLog]" + tag;
             Log.w(tag, msg);
         }
     }
 
     public static void i(String tag, String msg, Throwable e) {
         if (isDebug && mLogLevel <= INFO) {
+            tag = "[NaLog]" + tag;
             Log.i(tag, msg, e);
         }
     }
 
     public static void i(String tag, String msg) {
         if (isDebug && mLogLevel <= INFO) {
+            tag = "[NaLog]" + tag;
             Log.i(tag, msg);
         }
     }
 
     public static void d(String tag, String msg, Throwable e) {
         if (isDebug && mLogLevel <= DEBUG) {
+            tag = "[NaLog]" + tag;
             Log.d(tag, msg, e);
         }
     }
 
     public static void d(String tag, String msg) {
         if (isDebug && mLogLevel <= DEBUG) {
+            tag = "[NaLog]" + tag;
             Log.d(tag, msg);
         }
     }
 
     public static void v(String tag, String msg, Throwable e) {
         if (isDebug && mLogLevel <= VERBOSE) {
+            tag = "[NaLog]" + tag;
             Log.v(tag, msg, e);
         }
     }
 
     public static void v(String tag, String msg) {
         if (isDebug && mLogLevel <= VERBOSE) {
+            tag = "[NaLog]" + tag;
             Log.v(tag, msg);
         }
     }

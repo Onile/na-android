@@ -14,7 +14,11 @@ public class NaApiSub {
 
     public void init(Context context) {
         setIsDebug(BuildConfig.DEBUG);
-        setLogLevel(NaLog.DEFAULT);
+        if (BuildConfig.DEBUG) {
+            setLogLevel(NaLog.DEBUG);
+        } else {
+            setLogLevel(NaLog.DEFAULT);
+        }
         mApplicationContext = context;
     }
 
